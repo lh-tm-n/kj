@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kaderjenengan | Gate Challenge</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(99, 102, 241, 0.4);
+            box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.2);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+
+<body
+    class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white relative overflow-x-hidden">
+
+    <!-- Background Glowing Effects -->
+    <div class="absolute -top-40 -left-40 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute top-1/3 -right-40 w-96 h-96 bg-cyan-600/15 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- ==================== TANTANGAN GAME DINO ==================== -->
+    <section id="challenge-screen" class="min-h-screen w-full flex items-center justify-center p-4 z-20">
+        <div
+            class="max-w-xl w-full glass-card p-6 sm:p-8 rounded-3xl text-center shadow-2xl relative border border-slate-800">
+
+            <!-- Title Header -->
+            <div
+                class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-xs font-semibold text-indigo-300 mb-4">
+                <i data-lucide="gamepad-2" class="w-4 h-4"></i>
+                <span>Hidup adalah permainan</span>
+            </div>
+
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-white mb-2">
+                Akses Terkunci! 🦖
+            </h1>
+            <p class="text-slate-400 text-sm sm:text-base mb-6 leading-relaxed">
+                Kalahkan aku dulu, baru boleh masuk <strong class="text-indigo-400">Cuma 7 rintangan</strong> untuk
+                membuka.
+            </p>
+
+            <!-- Game Canvas Container -->
+            <div
+                class="relative w-full bg-slate-900/90 border border-slate-800 rounded-2xl overflow-hidden shadow-inner mb-4 touch-none">
+                <canvas id="gameCanvas" width="600" height="200" class="w-full h-auto block"></canvas>
+
+                <!-- Game Over Overlay -->
+                <div id="gameOverOverlay"
+                    class="hidden absolute inset-0 bg-slate-950/80 backdrop-blur-sm flex flex-col items-center justify-center gap-3">
+                    <p class="text-rose-400 font-bold text-lg flex items-center gap-2">
+                        <i data-lucide="alert-triangle" class="w-5 h-5"></i> Menabrak Rintangan!
+                    </p>
+                    <button onclick="resetGame()"
+                        class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm transition-all shadow-lg shadow-indigo-600/30 flex items-center gap-2">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i> Coba Lagi
+                    </button>
+                </div>
+            </div>
+
+            <!-- Controls & Progress -->
+            <div class="flex items-center justify-between text-xs sm:text-sm">
+                <div class="text-slate-400">
+                    Rintangan Terlewati: <span id="scoreText" class="font-bold text-indigo-400 text-base">0</span> / 7
+                </div>
+                <div class="text-slate-500 hidden sm:block">
+                    Tekan <kbd
+                        class="px-2 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-300">SPASI</kbd> atau
+                    <kbd class="px-2 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-300">KLIK</kbd>
+                </div>
+                <div class="text-slate-500 sm:hidden">
+                    Tap layar untuk lompat
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- ==================== HALAMAN UTAMA (LANDING PAGE) ==================== -->
+    <div id="main-content" class="hidden min-h-screen flex flex-col justify-between w-full">
+
+        <!-- Main Container -->
+        <main class="max-w-5xl mx-auto px-4 py-12 sm:py-16 w-full z-10 flex-grow">
+
+            <!-- Hero Header -->
+            <header class="text-center mb-12">
+                <div
+                    class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 text-xs font-medium text-slate-300 mb-6 shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Kita berbagi, bukan yang sepenuhnya mengerti</span>
+                </div>
+
+                <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight text-white mb-4">
+                    kaderjenengan<span class="text-indigo-400">.xyz</span>
+                </h1>
+                <p class="text-slate-400 text-base sm:text-lg max-w-xl mx-auto font-normal leading-relaxed">
+                    Manusia macam apa yang tidak memberi manfaat apapun?
+                </p>
+            </header>
+
+            <!-- Search Input -->
+            <div class="max-w-md mx-auto mb-10 relative">
+                <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="searchInput" placeholder="Apa yang kamu cari..."
+                    class="w-full bg-slate-900/90 border border-slate-800 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 rounded-xl py-2.5 pl-11 pr-4 text-sm text-slate-200 placeholder-slate-500 outline-none transition-all duration-200 shadow-inner"
+                    onkeyup="filterCards()" />
+            </div>
+
+            <!-- Project Cards Grid -->
+            <section id="cardGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+                <!-- Card 1: App -->
+                <a href="https:/linux-command.kaderjenengan.xyz" target="_blank"
+                    class="card-item group glass-card p-5 rounded-2xl transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 group-hover:scale-110 transition-transform">
+                                <i data-lucide="layout-grid" class="w-5 h-5"></i>
+                            </div>
+                            <span
+                                class="text-[10px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-md bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">Linux</span>
+                        </div>
+                        <h2
+                            class="text-lg font-bold text-white mb-1 group-hover:text-indigo-300 transition-colors flex items-center justify-between">
+                            Linux Command
+                            <i data-lucide="arrow-up-right"
+                                class="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-indigo-400"></i>
+                        </h2>
+                        <p class="text-slate-400 text-xs leading-relaxed mb-4">
+                            Saat dimana penampilan fisik bukan yang utama.
+                        </p>
+                    </div>
+                    <div
+                        class="text-[11px] font-mono text-slate-500 group-hover:text-slate-400 transition-colors pt-3 border-t border-slate-800/60">
+                        linux-command.kaderjenengan.xyz
+                    </div>
+                </a>
+
+                <!-- Card 2: Blog -->
+                <a href="https://ngetik.kaderjenengan.xyz" target="_blank"
+                    class="card-item group glass-card p-5 rounded-2xl transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 group-hover:scale-110 transition-transform">
+                                <i data-lucide="book-open" class="w-5 h-5"></i>
+                            </div>
+                            <span
+                                class="text-[10px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-md bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">Typing</span>
+                        </div>
+                        <h2
+                            class="text-lg font-bold text-white mb-1 group-hover:text-emerald-300 transition-colors flex items-center justify-between">
+                            Latihan Mengetik
+                            <i data-lucide="arrow-up-right"
+                                class="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-emerald-400"></i>
+                        </h2>
+                        <p class="text-slate-400 text-xs leading-relaxed mb-4">
+                            Bagaimana kamu mesra dengan komputer kalau posisi jarimu salah?
+                        </p>
+                    </div>
+                    <div
+                        class="text-[11px] font-mono text-slate-500 group-hover:text-slate-400 transition-colors pt-3 border-t border-slate-800/60">
+                        ngetik.kaderjenengan.xyz
+                    </div>
+                </a>
+
+                <!-- Card 3: Lab -->
+                <a href="https://wait.kaderjenengan.xyz" target="_blank"
+                    class="card-item group glass-card p-5 rounded-2xl transition-all duration-300 flex flex-col justify-between">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div
+                                class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 group-hover:scale-110 transition-transform">
+                                <i data-lucide="flask-conical" class="w-5 h-5"></i>
+                            </div>
+                            <span
+                                class="text-[10px] font-semibold tracking-wider uppercase px-2.5 py-1 rounded-md bg-amber-500/10 text-amber-300 border border-amber-500/20">Progress</span>
+                        </div>
+                        <h2
+                            class="text-lg font-bold text-white mb-1 group-hover:text-amber-300 transition-colors flex items-center justify-between">
+                            Ditunggu saja
+                            <i data-lucide="arrow-up-right"
+                                class="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-amber-400"></i>
+                        </h2>
+                        <p class="text-slate-400 text-xs leading-relaxed mb-4">
+                            Kreativitas membutuhkan lebih banyak caffein.
+                        </p>
+                    </div>
+                    <div
+                        class="text-[11px] font-mono text-slate-500 group-hover:text-slate-400 transition-colors pt-3 border-t border-slate-800/60">
+                        wait.kaderjenengan.xyz
+                    </div>
+                </a>
+
+            </section>
+
+            <!-- Empty Search State -->
+            <div id="noResults" class="hidden text-center py-12">
+                <i data-lucide="search-x" class="w-10 h-10 text-slate-600 mx-auto mb-3"></i>
+                <p class="text-slate-400 text-sm">Proyek tidak ditemukan.</p>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="border-t border-slate-900 py-6 text-center z-10">
+            <div
+                class="max-w-5xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+                <p>©
+                    <script>document.write(new Date().getFullYear())</script> kaderjenengan.xyz
+                </p>
+                <div class="flex items-center gap-4">
+                    <a href="https://github.com/lh-tm-n" target="_blank"
+                        class="hover:text-slate-300 transition-colors flex items-center gap-1.5">
+                        <i data-lucide="github" class="w-4 h-4"></i> Profil GitHub
+                    </a>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- ==================== JAVASCRIPT GAME LOGIC ==================== -->
+    <script>
+        lucide.createIcons();
+
+        // Canvas Setup
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreText = document.getElementById('scoreText');
+        const gameOverOverlay = document.getElementById('gameOverOverlay');
+
+        // Game Constants
+        const groundY = 165;
+        let gameLoopId;
+        let isGameOver = false;
+        let obstaclesPassed = 0;
+        const targetObstacles = 7;
+        let obstacleTimer = 0;
+        let tickCount = 0;
+        let groundOffset = 0;
+
+        // Background Clouds
+        const clouds = [
+            { x: 100, y: 35, speed: 0.4, w: 40 },
+            { x: 320, y: 50, speed: 0.6, w: 55 },
+            { x: 520, y: 25, speed: 0.3, w: 35 }
+        ];
+
+        // Dino Object
+        const dino = {
+            x: 45,
+            y: groundY - 32,
+            width: 28,
+            height: 32,
+            dy: 0,
+            gravity: 0.65,
+            jumpPower: -10,
+            isGrounded: true
+        };
+
+        // Obstacles Array
+        let obstacles = [];
+
+        // Jump Handler
+        function jump() {
+            if (isGameOver) return;
+            if (dino.isGrounded) {
+                dino.dy = dino.jumpPower;
+                dino.isGrounded = false;
+            }
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' || e.code === 'ArrowUp') {
+                e.preventDefault();
+                jump();
+            }
+        });
+
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            jump();
+        });
+
+        canvas.addEventListener('mousedown', () => {
+            jump();
+        });
+
+        // --- DRAWING FUNCTIONS --- //
+
+        // 1. Draw Dino Pixel Art
+        function drawDino(x, y, isGrounded, tick) {
+            ctx.save();
+            ctx.translate(x, y);
+
+            // Body (Indigo)
+            ctx.fillStyle = '#818cf8';
+            ctx.fillRect(8, 0, 18, 12);  // Head
+            ctx.fillRect(20, 3, 8, 7);   // Snout
+            ctx.fillRect(4, 12, 20, 12); // Main Body
+            ctx.fillRect(0, 14, 6, 6);   // Tail
+
+            // Eye
+            ctx.fillStyle = '#0284c7';
+            ctx.fillRect(16, 2, 4, 4);
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(18, 2, 2, 2);
+
+            // Arm
+            ctx.fillStyle = '#c7d2fe';
+            ctx.fillRect(20, 15, 5, 3);
+
+            // Legs Animation
+            ctx.fillStyle = '#4f46e5';
+            if (!isGrounded) {
+                // Jump pose
+                ctx.fillRect(6, 24, 6, 4);
+                ctx.fillRect(16, 22, 6, 4);
+            } else {
+                // Running leg animation
+                const step = Math.floor(tick / 6) % 2;
+                if (step === 0) {
+                    ctx.fillRect(6, 24, 5, 8);  // Left down
+                    ctx.fillRect(16, 24, 7, 4); // Right back
+                } else {
+                    ctx.fillRect(6, 24, 7, 4);  // Left back
+                    ctx.fillRect(16, 24, 5, 8); // Right down
+                }
+            }
+
+            ctx.restore();
+        }
+
+        // 2. Draw Cactus Obstacle
+        function drawCactus(x, y, w, h, isDouble) {
+            ctx.save();
+            ctx.translate(x, y);
+
+            ctx.fillStyle = '#10b981'; // Emerald Green
+            // Main Stem
+            ctx.fillRect(5, 4, 6, h - 4);
+            // Left arm
+            ctx.fillRect(1, 10, 4, 4);
+            ctx.fillRect(1, 6, 3, 6);
+            // Right arm
+            ctx.fillRect(11, 14, 4, 4);
+            ctx.fillRect(12, 10, 3, 6);
+
+            // Highlight
+            ctx.fillStyle = '#34d399';
+            ctx.fillRect(6, 4, 2, h - 6);
+
+            if (isDouble) {
+                ctx.fillStyle = '#059669';
+                ctx.fillRect(18, 10, 5, h - 10);
+                ctx.fillRect(15, 18, 3, 3);
+                ctx.fillRect(15, 14, 2, 5);
+            }
+
+            ctx.restore();
+        }
+
+        // 3. Draw Cyber Drone Obstacle (Flying)
+        function drawDrone(x, y, tick) {
+            ctx.save();
+            const floatY = y + Math.sin(tick / 8) * 4;
+            ctx.translate(x, floatY);
+
+            // Body
+            ctx.fillStyle = '#f43f5e';
+            ctx.fillRect(4, 6, 14, 8);
+            // Wing
+            ctx.fillStyle = '#fb7185';
+            ctx.fillRect(0, 4, 22, 2);
+            ctx.fillRect(2, 2, 18, 2);
+            // Eye Scanner
+            ctx.fillStyle = '#ffe4e6';
+            ctx.fillRect(11, 8, 4, 4);
+            // Jet Thrust Flame
+            ctx.fillStyle = '#38bdf8';
+            ctx.fillRect(8, 14, 6, 3 + (tick % 3));
+
+            ctx.restore();
+        }
+
+        // --- MAIN GAME LOOP --- //
+        function updateGame() {
+            if (isGameOver) return;
+
+            tickCount++;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw Moving Background Clouds
+            ctx.fillStyle = '#1e293b';
+            clouds.forEach(c => {
+                c.x -= c.speed;
+                if (c.x + c.w < 0) c.x = canvas.width + 20;
+                ctx.fillRect(c.x, c.y, c.w, 8);
+                ctx.fillRect(c.x + 8, c.y - 4, c.w - 16, 4);
+            });
+
+            // Ground Line & Moving Terrain Dots
+            groundOffset = (groundOffset + 4.5) % 20;
+            ctx.strokeStyle = '#334155';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(0, groundY);
+            ctx.lineTo(canvas.width, groundY);
+            ctx.stroke();
+
+            ctx.fillStyle = '#475569';
+            for (let i = -groundOffset; i < canvas.width; i += 20) {
+                ctx.fillRect(i, groundY + 6, 8, 2);
+                ctx.fillRect(i + 12, groundY + 12, 4, 2);
+            }
+
+            // Apply Gravity to Dino
+            dino.dy += dino.gravity;
+            dino.y += dino.dy;
+
+            if (dino.y >= groundY - dino.height) {
+                dino.y = groundY - dino.height;
+                dino.dy = 0;
+                dino.isGrounded = true;
+            }
+
+            // Draw Animated Dino
+            drawDino(dino.x, dino.y, dino.isGrounded, tickCount);
+
+            // Spawn Obstacles
+            obstacleTimer++;
+            if (obstacleTimer > 85 + Math.random() * 45) {
+                const type = Math.random() > 0.35 ? 'cactus' : 'drone';
+                const isDouble = type === 'cactus' && Math.random() > 0.5;
+
+                obstacles.push({
+                    x: canvas.width,
+                    y: type === 'drone' ? groundY - 38 : groundY - 28,
+                    width: type === 'drone' ? 22 : (isDouble ? 26 : 16),
+                    height: type === 'drone' ? 20 : 28,
+                    type: type,
+                    isDouble: isDouble,
+                    passed: false
+                });
+                obstacleTimer = 0;
+            }
+
+            // Update & Draw Obstacles
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                let obs = obstacles[i];
+                obs.x -= 4.5; // Game Speed
+
+                // Render Obstacle Based on Type
+                if (obs.type === 'cactus') {
+                    drawCactus(obs.x, obs.y, obs.width, obs.height, obs.isDouble);
+                } else {
+                    drawDrone(obs.x, obs.y, tickCount);
+                }
+
+                // Bounding Box Hitbox Check
+                const hitMargin = 3;
+                if (
+                    dino.x + hitMargin < obs.x + obs.width &&
+                    dino.x + dino.width - hitMargin > obs.x &&
+                    dino.y + hitMargin < obs.y + obs.height &&
+                    dino.y + dino.height - hitMargin > obs.y
+                ) {
+                    triggerGameOver();
+                    return;
+                }
+
+                // Count Score on Successful Pass
+                if (!obs.passed && obs.x + obs.width < dino.x) {
+                    obs.passed = true;
+                    obstaclesPassed++;
+                    scoreText.innerText = obstaclesPassed;
+
+                    // Check Win Condition (7 Obstacles)
+                    if (obstaclesPassed >= targetObstacles) {
+                        unlockPortal();
+                        return;
+                    }
+                }
+
+                // Remove Off-screen Obstacles
+                if (obs.x + obs.width < -10) {
+                    obstacles.splice(i, 1);
+                }
+            }
+
+            gameLoopId = requestAnimationFrame(updateGame);
+        }
+
+        function triggerGameOver() {
+            isGameOver = true;
+            cancelAnimationFrame(gameLoopId);
+            gameOverOverlay.classList.remove('hidden');
+        }
+
+        function resetGame() {
+            isGameOver = false;
+            obstaclesPassed = 0;
+            obstacleTimer = 0;
+            obstacles = [];
+            dino.y = groundY - dino.height;
+            dino.dy = 0;
+            scoreText.innerText = '0';
+            gameOverOverlay.classList.add('hidden');
+            updateGame();
+        }
+
+        // Unlock Portal & Fade In Landing Page
+        function unlockPortal() {
+            cancelAnimationFrame(gameLoopId);
+
+            const challengeScreen = document.getElementById('challenge-screen');
+            const mainContent = document.getElementById('main-content');
+
+            challengeScreen.classList.add('transition-opacity', 'duration-500', 'opacity-0');
+
+            setTimeout(() => {
+                challengeScreen.style.display = 'none';
+                mainContent.classList.remove('hidden');
+                mainContent.classList.add('animate-fade-in');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 500);
+        }
+
+        // Start Game
+        updateGame();
+
+        // Filter Subdomain Cards
+        function filterCards() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.card-item');
+            let visibleCount = 0;
+
+            cards.forEach(card => {
+                const text = card.innerText.toLowerCase();
+                if (text.includes(query)) {
+                    card.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+
+            const noResults = document.getElementById('noResults');
+            if (visibleCount === 0) {
+                noResults.classList.remove('hidden');
+            } else {
+                noResults.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+
+</html>
