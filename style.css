@@ -1,0 +1,493 @@
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+    background: #030304;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* ==================== FX CANVAS ==================== */
+.fx-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 40;
+}
+
+/* ==================== GATE ATMOSPHERE ==================== */
+.gate-atmosphere {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(600px circle at 50% 18%, rgba(99, 102, 241, 0.10), transparent 60%),
+        radial-gradient(500px circle at 82% 85%, rgba(34, 211, 238, 0.06), transparent 60%);
+}
+
+.gate-grid {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+    background-size: 46px 46px;
+    -webkit-mask-image: radial-gradient(circle at 50% 42%, #000 0%, transparent 72%);
+    mask-image: radial-gradient(circle at 50% 42%, #000 0%, transparent 72%);
+}
+
+.gate-vignette {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 25%, rgba(0, 0, 0, 0.9) 100%);
+}
+
+@keyframes rise {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.gate-inner {
+    animation: rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes pulseRing {
+    0% {
+        transform: scale(0.85);
+        opacity: 0.7;
+    }
+
+    70% {
+        transform: scale(1.55);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1.55);
+        opacity: 0;
+    }
+}
+
+.pulse-ring::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: 9999px;
+    border: 1px solid rgba(129, 140, 248, 0.35);
+    animation: pulseRing 3.2s ease-out infinite;
+}
+
+@keyframes shake {
+
+    10%,
+    90% {
+        transform: translateX(-1px);
+    }
+
+    20%,
+    80% {
+        transform: translateX(2px);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translateX(-4px);
+    }
+
+    40%,
+    60% {
+        transform: translateX(4px);
+    }
+}
+
+.shake {
+    animation: shake 0.45s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+@keyframes quoteIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.quote-in {
+    animation: quoteIn 0.5s ease both;
+}
+
+/* ==================== GATE FORM ==================== */
+.field {
+    position: relative;
+}
+
+.field input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 13px 16px;
+    font-size: 14px;
+    color: #e2e8f0;
+    outline: none;
+    letter-spacing: 0.02em;
+    transition: border-color 0.25s, background 0.25s, box-shadow 0.25s;
+}
+
+.field.has-toggle input {
+    padding-right: 44px;
+}
+
+.field input::placeholder {
+    color: #3f3f46;
+}
+
+.field input:focus {
+    border-color: rgba(129, 140, 248, 0.45);
+    background: rgba(99, 102, 241, 0.04);
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.08), 0 0 24px -8px rgba(99, 102, 241, 0.5);
+}
+
+.field-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 4px;
+    border-radius: 6px;
+    color: #475569;
+    transition: color 0.2s;
+}
+
+.field-toggle:hover {
+    color: #94a3b8;
+}
+
+.gate-submit {
+    width: 100%;
+    padding: 13px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(129, 140, 248, 0.28);
+    background: rgba(99, 102, 241, 0.07);
+    color: #c7d2fe;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    transition: background 0.25s, border-color 0.25s, box-shadow 0.25s, color 0.25s;
+}
+
+.gate-submit:hover {
+    background: rgba(99, 102, 241, 0.16);
+    border-color: rgba(129, 140, 248, 0.55);
+    color: #e0e7ff;
+    box-shadow: 0 0 30px -8px rgba(99, 102, 241, 0.65);
+}
+
+.gate-submit:disabled {
+    cursor: wait;
+    opacity: 0.7;
+}
+
+.gate-exit {
+    opacity: 0;
+    transform: scale(1.03);
+    filter: blur(8px);
+    transition: opacity 0.6s ease, transform 0.6s ease, filter 0.6s ease;
+}
+
+/* ==================== VAULT ==================== */
+#vault {
+    display: none;
+    flex-direction: column;
+    min-height: 100svh;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#vault.is-open {
+    display: flex;
+}
+
+#vault.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ==================== CARD SHELL + EDGE GLOW ==================== */
+@property --glow-angle {
+    syntax: '<angle>';
+    inherits: false;
+    initial-value: 0deg;
+}
+
+.mystery-card {
+    --accent-rgb: 129, 140, 248;
+    position: relative;
+    isolation: isolate;
+    border-radius: 26px;
+    transform-style: preserve-3d;
+    will-change: transform, opacity, filter;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: pan-y;
+    cursor: grab;
+}
+
+.mystery-card.dragging {
+    cursor: grabbing;
+}
+
+.mystery-card::before,
+.mystery-card::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    pointer-events: none;
+    background: conic-gradient(from var(--glow-angle),
+            transparent 0deg,
+            rgba(var(--accent-rgb), 0.55) 42deg,
+            transparent 108deg,
+            transparent 195deg,
+            rgba(var(--accent-rgb), 0.35) 245deg,
+            transparent 318deg);
+    animation: glowSpin 7s linear infinite;
+    z-index: 0;
+}
+
+.mystery-card::after {
+    inset: -6px;
+    filter: blur(16px);
+    opacity: 0.3;
+    z-index: -1;
+    transition: opacity 0.35s ease;
+}
+
+.mystery-card:hover::after {
+    opacity: 0.5;
+}
+
+.mystery-card:hover .card-surface {
+    border-color: rgba(255, 255, 255, 0.16);
+}
+
+@keyframes glowSpin {
+    to {
+        --glow-angle: 360deg;
+    }
+}
+
+.mystery-card.flash::after {
+    animation: glowFlash 0.7s ease-out;
+}
+
+@keyframes glowFlash {
+    0% {
+        opacity: 1;
+        filter: blur(10px);
+    }
+
+    100% {
+        opacity: 0.3;
+        filter: blur(16px);
+    }
+}
+
+/* ==================== CARD SURFACE (3D) ==================== */
+.card-surface {
+    position: relative;
+    z-index: 1;
+    border-radius: inherit;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(160deg, rgba(21, 21, 27, 0.97), rgba(6, 6, 9, 0.99));
+    overflow: hidden;
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.06),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.6),
+        0 26px 70px -34px rgba(0, 0, 0, 0.98);
+}
+
+.card-tilt {
+    position: relative;
+    z-index: 1;
+    transform-style: preserve-3d;
+    transition: transform 0.25s ease-out;
+    will-change: transform;
+}
+
+.mystery-card.dragging .card-tilt {
+    transition: none;
+}
+
+.card-tilt h2,
+.card-tilt .icon-box {
+    transform: translateZ(18px);
+}
+
+.card-aura {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(420px circle at 50% -5%, rgba(var(--accent-rgb), 0.16), transparent 65%);
+}
+
+.icon-box {
+    color: rgb(var(--accent-rgb));
+    background: rgba(var(--accent-rgb), 0.08);
+    border-color: rgba(var(--accent-rgb), 0.22);
+}
+
+.tag {
+    color: rgb(var(--accent-rgb));
+    background: rgba(var(--accent-rgb), 0.07);
+    border-color: rgba(var(--accent-rgb), 0.22);
+}
+
+.card-line {
+    background: linear-gradient(90deg, transparent, rgba(var(--accent-rgb), 0.45), transparent);
+}
+
+.open-btn {
+    color: rgb(var(--accent-rgb));
+    border-color: rgba(var(--accent-rgb), 0.3);
+    background: rgba(var(--accent-rgb), 0.07);
+}
+
+.open-btn:hover {
+    background: rgba(var(--accent-rgb), 0.16);
+    border-color: rgba(var(--accent-rgb), 0.55);
+    box-shadow: 0 0 24px -6px rgba(var(--accent-rgb), 0.5);
+}
+
+/* ==================== CINEMATIC SHUFFLE ==================== */
+.mystery-card.charging {
+    animation: charge 0.42s ease-in-out both;
+}
+
+@keyframes charge {
+    0% {
+        transform: scale(1);
+    }
+
+    55% {
+        transform: scale(0.962);
+    }
+
+    100% {
+        transform: scale(0.985);
+    }
+}
+
+.shatter-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    pointer-events: none;
+    perspective: 1000px;
+}
+
+.shatter-tile {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+    will-change: transform, opacity, filter;
+}
+
+.shatter-tile > .card-surface {
+    width: 100%;
+    height: 100%;
+}
+
+/* Shuffle HUD */
+.shuffle-status {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 10px;
+    letter-spacing: 0.34em;
+    text-transform: uppercase;
+    color: rgba(148, 163, 184, 0.65);
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+.shuffle-status.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.shuffle-status-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #a5b4fc;
+    box-shadow: 0 0 10px #818cf8;
+    animation: statusBlink 0.7s steps(2, end) infinite;
+}
+
+@keyframes statusBlink {
+    50% {
+        opacity: 0.2;
+    }
+}
+
+/* ==================== SHUFFLE BUTTON ==================== */
+#shuffleBtn.busy {
+    cursor: wait;
+}
+
+#shuffleBtn.busy i {
+    animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ==================== REDUCED MOTION ==================== */
+@media (prefers-reduced-motion: reduce) {
+
+    .mystery-card::before,
+    .mystery-card::after,
+    .pulse-ring::after,
+    .shuffle-status-dot {
+        animation: none;
+    }
+
+    .mystery-card.charging {
+        animation: none;
+    }
+}
