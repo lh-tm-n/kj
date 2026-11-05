@@ -153,7 +153,7 @@
         if (gatePassed) return;
 
         const identity = usernameInput.value.trim();
-        const secret = passwordInput.value;
+        const secret = passwordInput.value.trim();
 
         if (!USERNAME_RE.test(identity) || !PASSWORD_RE.test(secret)) {
             showQuote();

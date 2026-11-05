@@ -17,7 +17,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
     <!-- App styles -->
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css?v=2">
 </head>
 
 <body class="bg-[#030304] text-slate-100 antialiased overflow-x-hidden">
@@ -44,10 +44,12 @@
             <form id="gateForm" class="space-y-3" autocomplete="off" novalidate>
                 <div class="field">
                     <input id="usernameInput" type="text" placeholder="identitas" inputmode="text"
-                        autocomplete="off" autocapitalize="off" spellcheck="false" />
+                        autocomplete="off" autocapitalize="off" spellcheck="false"
+                        data-lpignore="true" data-1p-ignore="true" data-bwignore="true" />
                 </div>
                 <div class="field has-toggle">
-                    <input id="passwordInput" type="password" placeholder="kunci" autocomplete="new-password" />
+                    <input id="passwordInput" type="password" placeholder="kunci" autocomplete="new-password"
+                        data-lpignore="true" data-1p-ignore="true" data-bwignore="true" />
                     <button id="togglePassword" type="button" class="field-toggle" aria-label="Tampilkan kunci">
                         <i data-lucide="eye" class="h-4 w-4"></i>
                     </button>
@@ -120,7 +122,7 @@
     <canvas id="fxCanvas" class="fx-canvas" aria-hidden="true"></canvas>
 
     <!-- App logic -->
-    <script src="app.js"></script>
+    <script src="app.js?v=2"></script>
 </body>
 
 </html>
