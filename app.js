@@ -472,22 +472,6 @@
         shuffleBtn.disabled = true;
         shuffleBtn.classList.add('busy');
 
-        if (reducedMotion) {
-            cardEl.style.transition = 'opacity 0.18s ease';
-            cardEl.style.opacity = '0';
-            setTimeout(function () {
-                currentIndex = pickIndex(currentIndex);
-                renderCard(currentIndex);
-                setTimeout(function () {
-                    cardEl.style.transition = '';
-                    shuffleBtn.disabled = false;
-                    shuffleBtn.classList.remove('busy');
-                    isLocked = false;
-                }, 220);
-            }, 190);
-            return;
-        }
-
         const rect = cardEl.getBoundingClientRect();
         const cx = rect.left + rect.width / 2;
         const cy = rect.top + rect.height / 2;

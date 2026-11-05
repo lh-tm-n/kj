@@ -486,8 +486,4 @@ body {
     .shuffle-status-dot {
         animation: none;
     }
-
-    .mystery-card.charging {
-        animation: none;
-    }
 }
