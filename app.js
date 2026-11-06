@@ -64,8 +64,38 @@
             desc: 'Fondasi sebelum kamu sok tahu soal framework.',
             icon: 'braces',
             accent: '251, 146, 60'
+        },
+        {
+            title: 'Orkestra Warna',
+            host: 'orkestra.kaderjenengan.xyz',
+            url: 'https://orkestra.kaderjenengan.xyz/',
+            tag: 'Generative',
+            desc: 'Hidup itu tidak hitam dan putih saja, tetapi penuh dengan warna.',
+            icon: 'fraktal',
+            accent: '147, 51, 234'
         }
     ];
+
+    /* ==================== CUSTOM ICONS ==================== */
+    const customIcons = {
+        fraktal: [
+            '<path d="M12 21v-5"/>',
+            '<path d="M12 16 7 11"/>',
+            '<path d="M12 16l5-5"/>',
+            '<path d="M7 11 4 8"/>',
+            '<path d="M7 11l3-3"/>',
+            '<path d="M17 11l-3-3"/>',
+            '<path d="M17 11l3-3"/>'
+        ].join('')
+    };
+
+    function iconMarkup(name, className) {
+        const custom = customIcons[name];
+        if (!custom) return '<i data-lucide="' + name + '" class="' + className + '"></i>';
+        return '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" ' +
+            'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" ' +
+            'stroke-linejoin="round" class="lucide ' + className + '" aria-hidden="true">' + custom + '</svg>';
+    }
 
     /* ==================== QUOTES ==================== */
     const quotes = [
@@ -177,7 +207,7 @@
                 <div class="card-tilt">
                     <div class="mb-6 flex items-center justify-between">
                         <div class="icon-box flex h-11 w-11 items-center justify-center rounded-2xl border">
-                            <i data-lucide="${card.icon}" class="h-5 w-5"></i>
+                            ${iconMarkup(card.icon, 'h-5 w-5')}
                         </div>
                         <span class="tag rounded-md border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.18em]">${card.tag}</span>
                     </div>
